@@ -7,4 +7,7 @@
 #define ADC1_DP0 0b00000
 
 void ADC_Init(void); /*Initializes ADC Module on the board*/
+
+unsigned int ADC_read16b(char PIN); /*Read 16 bit ADC converted value*/
+
 #endif
