@@ -124,6 +124,42 @@ int I2C_WriteReg( uint8_t deviceAddr, uint8_t  regAddr, uint8_t value )
 
 }
 
+/* Initiates a read transaction between the NXP K64FN1xxx12 and i2c decive
+ * Input Args[]		deviceAddr: The Target device i2c address
+ *					value: The value to be written in a register
+ * Same as the above command, but only writes one byte of data
+ * Output: Returns 1 on sucessful write. Returns -1 on failure to write bytes
+ */
+int I2C_WriteReg1( uint8_t deviceAddr, uint8_t value )
+{
+    
+    i2c_master_transfer_t masterTransfer;                   // Make Transfer Struct
+    memset(&masterTransfer,0,sizeof(masterTransfer));
+
+    masterTransfer.slaveAddress     = deviceAddr;           // Init Transfer
+    masterTransfer.direction        = kI2C_Write;            
+    masterTransfer.subaddress       = 0;
+    masterTransfer.subaddressSize   = 0;
+    masterTransfer.data             = &value;
+    masterTransfer.dataSize					= 1;
+    masterTransfer.flags            = kI2C_TransferDefaultFlag;
+    
+    I2C_MasterTransferNonBlocking( I2C_CHANNEL_BASE, &g_m_handle, &masterTransfer);
+
+    while ( (!nakFlag) && (!completionFlag) ); // Busy Wait for Signal
+
+    nakFlag = 0;
+
+    if (completionFlag == 1)
+    {
+        completionFlag = 0;
+        return 1;
+    }
+
+    return -1; // Transmission failed 
+
+}
+
 /* Forces a bus release by siezing arbitration, then sending a stop signal */
 void I2C_ReleaseBus(void)
 {

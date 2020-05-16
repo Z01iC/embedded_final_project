@@ -79,6 +79,7 @@ int I2C_ReadRegs(uint8_t deviceAddr, uint8_t regAddr, uint8_t *rxBuff, uint32_t 
  * Output: Returns 1 on sucessful write. Returns -1 on failure to write bytes
  */
 int I2C_WriteReg( uint8_t deviceAddr, uint8_t  regAddr, uint8_t value );
+int I2C_WriteReg1( uint8_t deviceAddr, uint8_t value );
 
 /* I2C Callback Function. Called after a sucessful transfer 
  *	-Should never get called inline in your implementation
