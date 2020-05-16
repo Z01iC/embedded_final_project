@@ -160,12 +160,11 @@ int ACCEL_getAccelDat( SRAWDATA * accelDat)
 	// Save the status register because why not, might be useful
 	accelDat->s							= (uint8_t) buff[0];
 	// Now get the Data (note that it comes in two different bytes
-	accelDat->x             = (int16_t)((((buff[1] << 8) | buff[2])) >> 2);
-	accelDat->y             = (int16_t)((((buff[3] << 8) | buff[4])) >> 2);
-	accelDat->z             = (int16_t)((((buff[5] << 8) | buff[6])) >> 2);
+	accelDat->x             = (int16_t)((buff[1] << 8) | buff[2]) >> 2;
+	accelDat->y             = (int16_t)((buff[3] << 8) | buff[4]) >> 2;
+	accelDat->z             = (int16_t)((buff[5] << 8) | buff[6]) >> 2;
 			
 	return 1; // Sucessful Data Read
 
 }
-
 

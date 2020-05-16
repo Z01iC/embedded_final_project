@@ -5,7 +5,7 @@
   Function that initializes ADC Module on K64f
  *----------------------------------------------------------------------------*/
 void ADC_Init(void)	{
-	SIM->SCGC5    |= (1 <<  10);  /* Enable Clock to Port B & C */ 
+	SIM->SCGC5    |= (1 <<  10);  /* Enable Clock to Port B */ 
 	SIM_SCGC3 |= SIM_SCGC3_ADC1_MASK; /*Enable the ADC1 Clock*/
 	ADC1_SC1A |= ADC_SC1_ADCH(0b11111); /*Module is Default set to OFF*/
 	ADC1_CFG1 |= ADC_CFG1_MODE(0b11); /*Set Mode to 16 bit conversion single ended (diff = 0)*/

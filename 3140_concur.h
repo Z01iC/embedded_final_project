@@ -13,7 +13,9 @@
 #define __3140_CONCUR_H__
 
 #include <stdlib.h>
-#include <MK64F12.h>
+//#include <MK64F12.h>
+#include "fsl_common.h"
+
 
 //struct process_state;
 typedef struct process_state process_t;

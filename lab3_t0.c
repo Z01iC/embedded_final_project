@@ -7,6 +7,7 @@
 
 #include "3140_concur.h"
 #include "utils.h"
+#include "ADC.h"
 
 static char string[100];
 
@@ -24,7 +25,7 @@ void p1 (void)
 		sprintf(string, "ACCEL: ( %d, %d, %d ) S: %d \n\r",accelDat.x,accelDat.y,accelDat.z,accelDat.s);
 		uart_putString(string);
 	}
-	
+		
 }
 
 // Blink the LED just because its running currently
@@ -37,6 +38,27 @@ void p2 (void)
 	}
 }
 
+//Test Analog Accelerometer
+void testAccel(void){
+	int x1 = ADC_read16b(PTB10);
+	delay();
+	int y1 = ADC_read16b(PTB11);
+	delay();
+	int z1 = ADC_read16b(PTC11);
+	delay();
+	int x2 = ADC_read16b(PTB10);
+	delay();
+	int y2 = ADC_read16b(PTB11);
+	delay();
+	int z2 = ADC_read16b(PTC11);
+	delay();
+	int x3 = ADC_read16b(PTB10);
+	delay();
+	int y3 = ADC_read16b(PTB11);
+	delay();
+	int z3 = ADC_read16b(PTC11);
+	int hello = 0;
+}
 
 int main (void)
 {
@@ -46,6 +68,7 @@ int main (void)
 	clock=SystemCoreClock;
 
 	LED_Initialize();
+	ADC_Init();// Initialize ADC Module for ADC conversion
 
 	//LEDRed_On();	
 
@@ -60,7 +83,7 @@ int main (void)
 
 	char string[100];
 
-	if (process_create (p1,100) < 0) {
+	if (process_create (testAccel,100) < 0) {
 		return -1;
 	}
 
