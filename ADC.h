@@ -8,4 +8,7 @@
 
 void ADC_Init(void); /*Initializes ADC Module on the board*/
 unsigned int ADC_read16b(char PIN); /*Read 16 bit ADC converted value*/
+float getXg(unsigned int val); /*Converts X ADC value to float in g */
+float getYg(unsigned int val); /*Converts Y ADC value to float in g */
+float getZg(unsigned int val); /*Converts Z ADC value to float in g */
 #endif
