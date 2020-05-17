@@ -27,7 +27,7 @@ unsigned int ADC_read16b(char PIN)	{
 Converts X ADC value to float in g
  *----------------------------------------------------------------------------*/
 float getXg(unsigned int val)	{
-	float xg = ((float)val-(float)32813)/(float)6626;
+	float xg = ((float)val-(float)32337)/(float)6626;
 	return -1*xg;
 }
 
@@ -35,7 +35,7 @@ float getXg(unsigned int val)	{
 Converts Y ADC value to float in g
  *----------------------------------------------------------------------------*/
 float getYg(unsigned int val)	{
-	float yg = ((float)val-(float)32278)/(float)6537;
+	float yg = ((float)val-(float)32060)/(float)6537;
 	return -1*yg;
 }
 

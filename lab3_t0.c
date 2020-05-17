@@ -9,6 +9,8 @@
 #include "utils.h"
 #include "ADC.h"
 
+#include "LEDMat.h"
+
 static char string[100];
 
 
@@ -40,24 +42,25 @@ void p2 (void)
 
 //Test Analog Accelerometer
 void testAccel(void){
-	int x1 = ADC_read16b(PTB10);
-	delay();
-	int y1 = ADC_read16b(PTB11);
-	delay();
-	int z1 = ADC_read16b(PTC11);
-	delay();
-	int x2 = ADC_read16b(PTB10);
-	delay();
-	int y2 = ADC_read16b(PTB11);
-	delay();
-	int z2 = ADC_read16b(PTC11);
-	delay();
-	int x3 = ADC_read16b(PTB10);
-	delay();
-	int y3 = ADC_read16b(PTB11);
-	delay();
-	int z3 = ADC_read16b(PTC11);
-	int hello = 0;
+	int x = 0;
+	for(int i=0; i<1000; i++){
+		x= x + ADC_read16b(PTB10);
+	}
+	x=x/1000;
+	
+	int y=0;
+	for(int j=0; j<1000; j++){
+		y= y + ADC_read16b(PTB11);
+	}
+	y=y/1000;
+	
+	int z = 0;
+	for(int k=0; k<1000; k++){
+			z=z+ADC_read16b(ADC1_DM1);
+	}
+	z=z/1000;
+	int yeet=0;
+	yeet = yeet+1;
 }
 
 int main (void)
@@ -78,8 +81,10 @@ int main (void)
 	I2C_Init();				// Initialize I2C bus and Uart Serial Communications
 	uart_init();
 
-	uint8_t a = ACCEL_ReadWhoAmI();
-	uint8_t b = ACCEL_getDefaultConfig();
+	MatrixBegin();
+	
+	//uint8_t a = ACCEL_ReadWhoAmI();
+	//uint8_t b = ACCEL_getDefaultConfig();
 
 	char string[100];
 
