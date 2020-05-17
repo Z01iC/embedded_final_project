@@ -1,3 +1,16 @@
+/**
+ * @file matrixCol.c
+ * @author Hamilton Lee & Zoltan Csaki
+ * @copyright All rights reserved, 2020
+ *
+ * This file contains function implementations for 
+ * matrix Column structure used for LED matrix
+ * 
+ * @warning This file is offered AS IS and WITHOUT ANY WARRANTY, without
+ * even the implied warranties of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
+
 #include "matrixCol.h"
 #include <stdlib.h>
 #include <string.h>
@@ -9,21 +22,25 @@ matCol *createCol(char vals[8]){
     if(newCol == NULL){
         return NULL;
     }
-    strcpy(newCol->col, vals); /*Copy values from desired char array*/
+    //Copy vals array to col attribute
+    for(int i = 0; i < 8; i++)  {
+        newCol->col[i] = vals[i];
+    }
     newCol->next=NULL;
     return newCol;
 }
 
 /*Destorys columns at the end of the linked list*/
-void destroyCol(matCol	*matrixCol){
+matCol *destroyCol(matCol	*matrixCol){
     /*If nothing is passed in*/
 	if(matrixCol == NULL)	{
-			return;
+			return NULL;
 	}
     /*If this is the only thing in the linked list*/
 	if(matrixCol->next == NULL){
+			free(matrixCol->col);
 			free(matrixCol); //Free the memory
-			return;
+			return NULL;
 	}
     /*Remove the last one and set the previous one's next to NULL*/
     matCol *curr = matrixCol;
@@ -34,6 +51,7 @@ void destroyCol(matCol	*matrixCol){
     }
     prev->next=NULL;
     free(curr); //free the memory
+		return matrixCol;
 }
 
 /*Shift in a column to a linked list of columns*/

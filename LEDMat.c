@@ -108,6 +108,7 @@ void clearBuffer(void)	{
 	}
 }
 
+/*Set a buffer value manually*/
 void setBuffer(uint8_t val, int index){
 	displayBuffer[index]=val;
 }
@@ -118,18 +119,20 @@ and then sets the buffer according to the  elements of column*/
 void toBuffer_help(matCol* matrixCol, char curr_col){
 	//if the column is on the first LED matrix
 	if(curr_col<=7){
-		for(int i=0; i<15; i=i+2){
-			displayBuffer[i] =  displayBuffer[i] + (matrixCol->col[i] << curr_col);
+		for(int i=0; i<8; i=i+1){
+			displayBuffer[2*i] =  displayBuffer[2*i] + (matrixCol->col[i] << curr_col);
 		}
 	}
 	//if the column is on the second LED matrix
-	else{
-		for(int i=1; i<16;i=i+2){
-			displayBuffer[i] = displayBuffer[i] + (matrixCol->col[i] << (curr_col-8));
+	else if(curr_col < 16){
+		for(int i=0; i<8;i=i+1){
+			displayBuffer[2*i+1] = displayBuffer[2*i+1] + (matrixCol->col[i] << (curr_col-8));
 		}
 	}
-
-	if(curr_col>=15){
+	else{
+		return;
+	}
+	if(matrixCol->next==NULL){
 		return;
 	}
 	else{
@@ -140,6 +143,9 @@ void toBuffer_help(matCol* matrixCol, char curr_col){
 /*Writes a linked list of columns into the proper buffer format*/
 void toBuffer(matCol* matrixCol){
 	clearBuffer();
+	if(matrixCol == NULL)	{
+		return;
+	}
 	toBuffer_help(matrixCol, 0);
 }
 
