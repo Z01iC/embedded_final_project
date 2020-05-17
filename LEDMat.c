@@ -108,6 +108,10 @@ void clearBuffer(void)	{
 	}
 }
 
+void setBuffer(uint8_t val, int index){
+	displayBuffer[index]=val;
+}
+
 /*updates the current buffer based on the input linked list of columns. 
 This function first clears the buffer recursively iterates through the matCol,
 and then sets the buffer according to the  elements of column*/

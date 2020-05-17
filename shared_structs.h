@@ -9,7 +9,7 @@ struct process_state {
   unsigned int blocked; //0 if unblocked 1 if blocked
   unsigned int *sp;
 	unsigned int *orig_sp;
-  int n;
+  int stack_size;
   struct process_state *next;
 };
 
