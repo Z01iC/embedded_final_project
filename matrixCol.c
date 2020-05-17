@@ -38,7 +38,6 @@ matCol *destroyCol(matCol	*matrixCol){
 	}
     /*If this is the only thing in the linked list*/
 	if(matrixCol->next == NULL){
-			free(matrixCol->col);
 			free(matrixCol); //Free the memory
 			return NULL;
 	}

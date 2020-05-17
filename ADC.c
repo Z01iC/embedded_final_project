@@ -1,6 +1,17 @@
 #include <MK64F12.h>
 #include "ADC.h"
 
+//short delay
+void shortDelay(void){
+	int j;
+	for(j=0; j<10000; j++);
+}
+
+// Offsets for X, Y, nnd Z to zero the accelerometer on the user
+float xOffset = 0;
+float yOffset = 0;
+float zOffset = 0;
+
 /*----------------------------------------------------------------------------
   Function that initializes ADC Module on K64f
  *----------------------------------------------------------------------------*/
@@ -23,6 +34,41 @@ unsigned int ADC_read16b(char PIN)	{
 
 }
 
+
+/*----------------------------------------------------------------------------
+Reads accelerometer 100 times and takes the average of the z reading
+ *----------------------------------------------------------------------------*/
+float readAccelZ(){
+    float z = 0;
+	for(int k=0; k<100; k++){
+			z=z+getZg(ADC1_DM1);
+	}
+	z=z/100;
+    return z;
+}
+
+/*----------------------------------------------------------------------------
+Reads accelerometer 100 times and takes the average of the y reading
+ *----------------------------------------------------------------------------*/
+float readAccelY(){
+    float y = 0;
+	for(int k=0; k<100; k++){
+			y=y+getZg(PTB11);
+	}
+	y=y/100;
+    return y;
+}
+/*----------------------------------------------------------------------------
+Reads accelerometer 100 times and takes the average of the z reading
+ *----------------------------------------------------------------------------*/
+float readAccelX(){
+    float x = 0;
+	for(int k=0; k<100; k++){
+			x=x+getZg(PTB10);
+	}
+	x=x/100;
+    return x;
+}
 /*----------------------------------------------------------------------------
 Converts X ADC value to float in g
  *----------------------------------------------------------------------------*/
@@ -40,9 +86,28 @@ float getYg(unsigned int val)	{
 }
 
 /*----------------------------------------------------------------------------
-Converts Z ADC value to float in g
+Converts Y ADC value to float in g
  *----------------------------------------------------------------------------*/
+
 float getZg(unsigned int val)	{
 	float zg = ((float)val-(float)34372)/(float)6809;
 	return -1*zg;
+}
+
+/*----------------------------------------------------------------------------
+Calibrates the accelerometer by setting the default X, Y, Z Offsets
+ *----------------------------------------------------------------------------*/
+void calibrateAccel(void)	{
+	float tempX = 0;
+	float tempY = 0;
+	float tempZ = 0;
+	for(int i=0; i<1000){
+		shortDelay();
+		tempX= tempX+ readAccelX();
+		tempY= tempY+ readAccelY();
+		tempZ= tempZ+ readAccelZ();
+	}
+	xOffset= tempX/1000;
+	yOffset= tempY/1000;
+	zOffset= tempZ/1000;
 }

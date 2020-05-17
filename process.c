@@ -1,42 +1,5 @@
-/***************************************************************************
- *
- *  Copyright (c) 2015 Cornell University
- *  Computer Systems Laboratory
- *  Cornell University, Ithaca, NY 14853
- *  All Rights Reservedw
- *
- *  $Id$
- *
- **************************************************************************
- */
-#include <stdlib.h>
 #include "3140_concur.h"
-#include "lock.h"
-/*
-  State layout:
-  .-----------------.
-  |     xPSR        | <--- status register
-  |-----------------|
-  |      PC         | <--- starting point of the process's function
-  |-----------------|
-  |      LR         | <--- process_terminated
-  |-----------------|
-  |      R12        |
-  |-----------------|
-  |    R3 - R0      |
-  |-----------------|
-  |   0xFFFFFFF9    | <--- exception return value
-  |-----------------|
-  |    R4 - R11     |
-  |-----------------|
-  |    PIT State    |
-  |-----------------|
-  State requires 18 slots on the stack.
- */
-
-//############################################################
-//#########################MY CODE############################
-//############################################################
+#include "shared_structs.h"
 
 //define Process queue and current process
 process_t *process_queue = NULL;   //initially holds nothing, will populate later
@@ -135,7 +98,7 @@ int process_create(void (*f)(void), int n)
   //initialize fields of new struct
 	newProcess->blocked = 0;
 	newProcess->sp = stackPointer;
-  newProcess->stack_size = n;
+  newProcess->n = n;
   newProcess->next = NULL;
 	newProcess->orig_sp = stackPointer;
   //add new process to the end of the queue
@@ -159,10 +122,23 @@ void process_start(void)
   //set up PIT timer but DON'T start it
   NVIC_EnableIRQ(PIT0_IRQn); /* enable PIT0 Interrupts (for part 2) */
   SIM->SCGC6 = SIM_SCGC6_PIT_MASK;
+
   //load a reasonable timing value for the interrupts
-  PIT->CHANNEL[0].LDVAL = 0x01FFF;
+  PIT->CHANNEL[0].LDVAL = 0x1000;
   PIT->MCR = 0x0;
   PIT->CHANNEL[0].TCTRL |= (1 << 1);
+
+  //clock frequency is 20.97MHz
+  NVIC_EnableIRQ(PIT1_IRQn); /* enable PIT0 Interrupts (for part 2) */
+  SIM->SCGC6 |= SIM_SCGC6_PIT_MASK;
+  PIT->CHANNEL[1].LDVAL = 0x51EA;
+  PIT->MCR = 0x0;
+  PIT->CHANNEL[1].TCTRL |= 0x03;
+
+  //Setting priorities for interrupts
+  NVIC_SetPriority(PIT1_IRQn, 3);
+  NVIC_SetPriority(PIT0_IRQn, 2);
+  NVIC_SetPriority(SVCall_IRQn, 1);
 
   // call to process begin
   process_begin();
@@ -196,7 +172,7 @@ unsigned int *process_select(unsigned int *cursp)
     if (current_process != NULL)
     {
       free(current_process);
-      process_stack_free(current_process->orig_sp, current_process->stack_size);
+      process_stack_free(current_process->orig_sp, current_process->n);
     }
     //if there are no processes left in the queue, return null
     if (process_queue == NULL)
