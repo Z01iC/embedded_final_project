@@ -7,6 +7,9 @@ float xg = 0x00;
 float yg = 0x00;
 float zg = 0x00;
 
+/*Current Shape we want to pass into the display*/
+char currentShape[8] = NULL;
+
 struct accelData *thousandReadingsX = NULL; /*The last 1000 readings of the accel ADC data*/
 struct accelData *thousandReadingsY = NULL; /*The last 1000 readings of the accel ADC data*/
 static int lenListX = 0; /*length of the thousandReadingsX list*/
@@ -103,10 +106,10 @@ int main (void)
     
 
 }
-//Returns the shape of the column that should be added to the waveform
+//Sets the shape of the column that should be added to the waveform
 //based on recent readings
-char[8] findShape(){
-    return NULL;
+void findShape(void){
+    currentShape = NULL;
 }
 
 /* 
