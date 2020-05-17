@@ -118,18 +118,18 @@ and then sets the buffer according to the  elements of column*/
 void toBuffer_help(matCol* matrixCol, char curr_col){
 	//if the column is on the first LED matrix
 	if(curr_col<=7){
-		for(int i=0; i<8; i++){
+		for(int i=0; i<15; i=i+2){
 			displayBuffer[i] =  displayBuffer[i] + (matrixCol->col[i] << curr_col);
 		}
 	}
 	//if the column is on the second LED matrix
 	else{
-		for(int i=8; i<16;i++){
+		for(int i=1; i<16;i=i+2){
 			displayBuffer[i] = displayBuffer[i] + (matrixCol->col[i] << (curr_col-8));
 		}
 	}
 
-	if(curr_col==15){
+	if(curr_col>=15){
 		return;
 	}
 	else{
