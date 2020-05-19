@@ -4,6 +4,10 @@
 /*display Values for our LED matrix*/
 matCol *displayValues = NULL;
 
+float xg = 0x00;
+float yg = 0x00;
+float zg = 0x00;
+
 volatile int count = 0;
 
 /*Current Shape we want to pass into the display*/
@@ -94,31 +98,33 @@ void copyArraytoShape(char arr[8])  {
 //Sets the shape of the column that should be added to the waveform
 //based on recent readings
 void findShape(void){
-    float i = Xaccel->avg;
-		float j = Yaccel->avg;
-		float k = Zaccel->avg;
-		float mag = getMag(Xaccel->avg, Yaccel->avg, Zaccel->avg);
-    float sign = Xaccel->avg > 0? 1.0 : -1.0;
-    mag = sign*mag;
-    if(mag>0.15){
+  
+    //float Xresult = (fabs(Xaccel->min) > fabs(Xaccel->min)) ? Xaccel->min:Xaccel->max;
+    //float Yresult = (fabs(Yaccel->min) > fabs(Yaccel->min)) ? Yaccel->min:Yaccel->max;
+    //float Zresult = (fabs(Zaccel->min) > fabs(Zaccel->min)) ? Zaccel->min:Zaccel->max;
+    
+		float Xresult = Xaccel->avg;
+		float Yresult = Yaccel->avg;
+		float Zresult = Zaccel->avg;
+    if(Xresult>0.4){
         copyArraytoShape(POS4);
     }
-    else if(mag>0.1){
+    else if(Xresult>0.2){
         copyArraytoShape(POS3);
     }
-    else if(mag>0.05){
+    else if(Xresult>0.1){
         copyArraytoShape(POS2);
     }
-    else if(mag>0.05){
+    else if(Xresult>0.05){
         copyArraytoShape(POS1);
     }
-    else if(mag>0){
+    else if(Xresult>-0.05){
         copyArraytoShape(Flatline);
     }
-    else if(mag>-0.05){
+    else if(Xresult>-0.1){
         copyArraytoShape(NEG1);
     }
-    else if(mag>-0.1){
+    else if(Xresult>-0.2){
         copyArraytoShape(NEG2);
     }
     else{

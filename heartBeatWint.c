@@ -4,10 +4,14 @@
 /*display Values for our LED matrix*/
 matCol *displayValues = NULL;
 
-volatile int count = 0;
+float xg = 0x00;
+float yg = 0x00;
+float zg = 0x00;
 
 /*Current Shape we want to pass into the display*/
 char currentShape[8] = {};
+
+
 
 accelData *initAccelData(void)
 {
@@ -16,7 +20,7 @@ accelData *initAccelData(void)
     newData->max = -100;
     newData->avg=0;
     newData->number=0;
-		return newData;
+		return newData; 
 }
 
 struct accelData *Xaccel = NULL;
@@ -25,6 +29,9 @@ struct accelData *Zaccel = NULL;
 
 void addAccelDataX(float newAccel){
     Xaccel->min = (newAccel < Xaccel->min ? newAccel:Xaccel->min);
+		float i = Xaccel->max;
+		float j = Xaccel->min;
+		float k = Xaccel->avg;
     Xaccel->max = (newAccel > Xaccel->max ? newAccel:Xaccel->max);
     Xaccel->avg = (Xaccel->avg*(Xaccel->number)+newAccel)/((Xaccel->number)+1);
     Xaccel->number += 1;
@@ -83,54 +90,9 @@ void startTimers(void)  {
   NVIC_SetPriority(SVCall_IRQn, 1);
 }
 
-
-void copyArraytoShape(char arr[8])  {
-    for(int i=0; i<8; i++){
-        currentShape[i] = arr[i];
-    }
-}
-
-
-//Sets the shape of the column that should be added to the waveform
-//based on recent readings
-void findShape(void){
-    float i = Xaccel->avg;
-		float j = Yaccel->avg;
-		float k = Zaccel->avg;
-		float mag = getMag(Xaccel->avg, Yaccel->avg, Zaccel->avg);
-    float sign = Xaccel->avg > 0? 1.0 : -1.0;
-    mag = sign*mag;
-    if(mag>0.15){
-        copyArraytoShape(POS4);
-    }
-    else if(mag>0.1){
-        copyArraytoShape(POS3);
-    }
-    else if(mag>0.05){
-        copyArraytoShape(POS2);
-    }
-    else if(mag>0.05){
-        copyArraytoShape(POS1);
-    }
-    else if(mag>0){
-        copyArraytoShape(Flatline);
-    }
-    else if(mag>-0.05){
-        copyArraytoShape(NEG1);
-    }
-    else if(mag>-0.1){
-        copyArraytoShape(NEG2);
-    }
-    else{
-        copyArraytoShape(NEG3);
-    }
-    
-}
-
 int main (void)
 {
 	Xaccel = initAccelData();
-	
 	Yaccel = initAccelData();
 	Zaccel = initAccelData();
 	displayValues = createCol(Flatline);
@@ -140,12 +102,12 @@ int main (void)
         displayValues = shiftColIn(Flatline, displayValues);
     }
     LED_Initialize();	//Initialize Board LEDs
-		ADC_Init();				// Initialize ADC Module for ADC conversion
-		I2C_ReleaseBus(); // Force Restart the bus, this is done via GPIO commands
+	ADC_Init();				// Initialize ADC Module for ADC conversion
+	I2C_ReleaseBus(); // Force Restart the bus, this is done via GPIO commands
 										// and not via the onboard i2c module
-		I2C_Init();				// Initialize I2C bus and Uart Serial Communications
-		uart_init();
-		MatrixBegin();  //Initialize the LED Matrix
+	I2C_Init();				// Initialize I2C bus and Uart Serial Communications
+	uart_init();
+	MatrixBegin();  //Initialize the LED Matrix
 
     // Set default flatline signal and update the display
     toBuffer(displayValues);
@@ -154,41 +116,60 @@ int main (void)
     //Calibrate the Accelerometer
     calibrateAccel();
     //Calibrate the Timers so the heart rate monitor starts
-    //startTimers();
+    startTimers();
 
     while(1){
-			count++;
-			addAccelDataX(readAccelX());
-			addAccelDataY(readAccelY());
-			addAccelDataZ(readAccelZ());
-			if(count==1000)	{
-				//update global data based on current accelerometer readings
-				findShape(); //Update the current shape that should be passed in
-				displayValues = shiftColIn(currentShape, displayValues);
-				displayValues = destroyCol(displayValues);
-
-				// Update the LED Matrix
-				toBuffer(displayValues);
-
-				//Disable IRQ when updating display
-				//Update Display
-				updateDisplay();
-
-				//clears the accelerometer data
-				clearAccelData();
-				count = 0;
-			}
+        //update global data based on current accelerometer readings
 
     }
     
 
 }
 
+void copyArraytoShape(char arr[8])  {
+    for(int i=0; i<8; i++){
+        currentShape[i] = arr[i];
+    }
+}
+//Sets the shape of the column that should be added to the waveform
+//based on recent readings
+void findShape(void){
+  
+    float Xresult = (fabs(Xaccel->min) > fabs(Xaccel->min)) ? Xaccel->min:Xaccel->max;
+    float Yresult = (fabs(Yaccel->min) > fabs(Yaccel->min)) ? Yaccel->min:Yaccel->max;
+    float Zresult = (fabs(Zaccel->min) > fabs(Zaccel->min)) ? Zaccel->min:Zaccel->max;
+    
+    if(Xresult>0.4){
+        copyArraytoShape(POS4);
+    }
+    else if(Xresult>0.2){
+        copyArraytoShape(POS3);
+    }
+    else if(Xresult>0.1){
+        copyArraytoShape(POS2);
+    }
+    else if(Xresult>0.05){
+        copyArraytoShape(POS1);
+    }
+    else if(Xresult>-0.05){
+        copyArraytoShape(Flatline);
+    }
+    else if(Xresult>-0.1){
+        copyArraytoShape(NEG1);
+    }
+    else if(Xresult>-0.2){
+        copyArraytoShape(NEG2);
+    }
+    else{
+        copyArraytoShape(NEG3);
+    }
+    
+}
 
 /* 
      PIT Interrupt Handler to deal with the 1ms timer to count the current system time
 */
-void PIT0_IRQHandler(void)
+void PIT1_IRQHandler(void)
 {
 	NVIC_DisableIRQ(PIT1_IRQn);
     //decide what sort of column to add based on global varaibles
@@ -210,7 +191,7 @@ void PIT0_IRQHandler(void)
 	NVIC_EnableIRQ(PIT1_IRQn);
 }
 
-void PIT1_IRQHandler(void)
+void PIT0_IRQHandler(void)
 {
 	NVIC_DisableIRQ(PIT0_IRQn);
     //Find ADC values for heartbeat!

@@ -20,4 +20,5 @@ float getXg(unsigned int val); /*Converts X ADC value to float in g */
 float getYg(unsigned int val); /*Converts Y ADC value to float in g */
 float getZg(unsigned int val); /*Converts Z ADC value to float in g */
 void calibrateAccel(void); /*Calibrates the accelerometer on the user*/
+float getMag(float X, float Y, float Z); /*Finds the magnitude of acceleration vector minus gravity*/
 #endif

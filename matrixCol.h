@@ -20,5 +20,3 @@ matCol *destroyCol(matCol  *matrixCol); /*Free the memory for a matrix column*/
 matCol *shiftColIn(char vals[8], matCol *head); /*Shift in a column to a linked list of columns*/
 #endif
 
-
-

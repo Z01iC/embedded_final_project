@@ -22,8 +22,10 @@ typedef struct columnFrame {
 *Using a Linked List for the accelerometer data
 */
 typedef struct accelData {
-  float currAccel;
-  struct accelData *next; //points to next thing in linked list
+  float min;
+  float max; //points to next thing in linked list
+  float avg;
+  int number;
 } accelData;
 
 #endif
