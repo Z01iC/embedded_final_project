@@ -94,31 +94,28 @@ void copyArraytoShape(char arr[8])  {
 //Sets the shape of the column that should be added to the waveform
 //based on recent readings
 void findShape(void){
-    float i = Xaccel->avg;
-		float j = Yaccel->avg;
-		float k = Zaccel->avg;
 		float mag = getMag(Xaccel->avg, Yaccel->avg, Zaccel->avg);
-    float sign = Xaccel->avg > 0? 1.0 : -1.0;
+    float sign = Zaccel->avg > 0? 1.0 : -1.0;
     mag = sign*mag;
-    if(mag>0.4){
+    if(mag>0.15){
         copyArraytoShape(POS4);
     }
-    else if(mag>0.2){
+    else if(mag>0.06){
         copyArraytoShape(POS3);
     }
-    else if(mag>0.1){
+    else if(mag>0.04){
         copyArraytoShape(POS2);
     }
-    else if(mag>0.05){
+    else if(mag>0.02){
         copyArraytoShape(POS1);
     }
-    else if(mag>-0.05){
+    else if(mag>0.00){
         copyArraytoShape(Flatline);
     }
-    else if(mag>-0.1){
+    else if(mag>-0.02){
         copyArraytoShape(NEG1);
     }
-    else if(mag>-0.2){
+    else if(mag>-0.04){
         copyArraytoShape(NEG2);
     }
     else{
@@ -126,11 +123,16 @@ void findShape(void){
     }
     
 }
+void testVal(void)	{
+	int x = ADC_read16b(PTB10);
+	int y = ADC_read16b(PTB11);
+	int z = ADC_read16b(ADC1_DM1);
+	int lol = 0;
+}
 
 int main (void)
 {
 	Xaccel = initAccelData();
-	
 	Yaccel = initAccelData();
 	Zaccel = initAccelData();
 	displayValues = createCol(Flatline);
@@ -151,6 +153,7 @@ int main (void)
     toBuffer(displayValues);
     //Update Display
     updateDisplay();
+		testVal();
     //Calibrate the Accelerometer
     calibrateAccel();
     //Calibrate the Timers so the heart rate monitor starts
@@ -161,7 +164,7 @@ int main (void)
 			addAccelDataX(readAccelX());
 			addAccelDataY(readAccelY());
 			addAccelDataZ(readAccelZ());
-			if(count==1000)	{
+			if(count==500)	{
 				//update global data based on current accelerometer readings
 				findShape(); //Update the current shape that should be passed in
 				displayValues = shiftColIn(currentShape, displayValues);
